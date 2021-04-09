@@ -15,15 +15,11 @@ import (
 )
 
 func main() {
-	// insecureClient := new(http.Client)
-	// insecureClient.Transport = &http.Transport{
-	// 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	// }
-
 	exporter, err := stackdriver.NewExporter(
 		stackdriver.Options{
-			ProjectID:         "google-project-id",
-			ReportingInterval: 1 * time.Second,
+			ProjectID:            "google-project-id",
+			BundleCountThreshold: 3,
+			ReportingInterval:    1 * time.Second,
 			MonitoringClientOptions: []option.ClientOption{
 				option.WithEndpoint("localhost:9443")}},
 	)
@@ -55,8 +51,6 @@ func main() {
 		},
 	}
 	_ = client // use client
-
-	// TLSClientConfig: &tls.Config{InsecureSkipVerify: true}, // ignore expired SSL certificates
 
 	// All outgoing requests from client will include a Stackdriver Trace header.
 	// See the ochttp package for how to handle incoming requests.
