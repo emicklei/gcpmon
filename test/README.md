@@ -1,4 +1,4 @@
-# manual test gmetrics
+# manual test gcpmon
 
-- start gmetrics
+- start gcpmon
 - run the default stackdriver example using `go run *.go`
