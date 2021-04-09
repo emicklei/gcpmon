@@ -1,0 +1,6 @@
+cert/ca.cert
+cert/ca.key
+cert/ca.srl
+cert/server.crt
+cert/server.csr
+cert/server.key
