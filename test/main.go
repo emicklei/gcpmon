@@ -11,18 +11,21 @@ import (
 	"contrib.go.opencensus.io/exporter/stackdriver/propagation"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/stats/view"
+	"go.opencensus.io/trace"
 	"google.golang.org/api/option"
 )
 
 func main() {
+	localOptions := []option.ClientOption{
+		option.WithEndpoint("localhost:9443")}
+
 	exporter, err := stackdriver.NewExporter(
 		stackdriver.Options{
-			ProjectID:            "google-project-id",
-			BundleCountThreshold: 3,
-			ReportingInterval:    1 * time.Second,
-			MonitoringClientOptions: []option.ClientOption{
-				option.WithEndpoint("localhost:9443")}},
-	)
+			ProjectID:               "google-project-id",
+			BundleCountThreshold:    3,
+			ReportingInterval:       1 * time.Second,
+			MonitoringClientOptions: localOptions,
+			TraceClientOptions:      localOptions})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +45,8 @@ func main() {
 	}
 
 	// Export to Stackdriver Trace.
-	// trace.RegisterExporter(exporter)
+	trace.RegisterExporter(exporter)
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
 
 	// Automatically add a Stackdriver trace header to outgoing requests:
 	client := &http.Client{

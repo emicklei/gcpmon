@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -19,9 +20,13 @@ func main() {
 		log.Fatal("failed to load TLS", err)
 	}
 
-	svc := new(MetricsService)
+	ms := new(MetricsService)
+	ts := new(TraceService)
 	grpcServer := grpc.NewServer(grpc.Creds(cred))
-	monitoringpb.RegisterMetricServiceServer(grpcServer, svc)
+	log.Println("register metrics service")
+	monitoringpb.RegisterMetricServiceServer(grpcServer, ms)
+	log.Println("register tracing service")
+	cloudtrace.RegisterTraceServiceServer(grpcServer, ts)
 	log.Println("serving gRPC on :9443")
 	grpcServer.Serve(lis)
 }
