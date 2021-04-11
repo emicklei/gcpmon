@@ -20,13 +20,18 @@ func main() {
 		log.Fatal("failed to load TLS", err)
 	}
 
-	ms := new(MetricsService)
-	ts := new(TraceService)
+	mon := NewMonitor()
+	mon.setup()
+
+	ms := &MetricsService{monitor: mon}
+	ts := &TraceService{monitor: mon}
 	grpcServer := grpc.NewServer(grpc.Creds(cred))
 	log.Println("register metrics service")
 	monitoringpb.RegisterMetricServiceServer(grpcServer, ms)
 	log.Println("register tracing service")
 	cloudtrace.RegisterTraceServiceServer(grpcServer, ts)
 	log.Println("serving gRPC on :9443")
-	grpcServer.Serve(lis)
+	go grpcServer.Serve(lis)
+
+	start(mon)
 }
