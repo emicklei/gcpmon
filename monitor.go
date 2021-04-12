@@ -7,14 +7,16 @@ import (
 )
 
 type Monitor struct {
+	store                *EventStore
 	ProjectList          *tvp.StringListSelectionHolder
 	MetricDescriptorList *tvp.StringListSelectionHolder
 	BatchWriteSpansList  *tvp.StringListSelectionHolder
 	Console              *tvp.StringHolder
 }
 
-func NewMonitor() *Monitor {
+func NewMonitor(s *EventStore) *Monitor {
 	return &Monitor{
+		store:                s,
 		ProjectList:          new(tvp.StringListSelectionHolder),
 		MetricDescriptorList: new(tvp.StringListSelectionHolder),
 		Console:              new(tvp.StringHolder),
@@ -24,4 +26,36 @@ func NewMonitor() *Monitor {
 func (m *Monitor) Printf(format string, v ...interface{}) {
 	m.Console.Append(fmt.Sprintf(format, v...))
 	// log.Printf(format, v...)
+}
+
+func (m *Monitor) updateProjects() {
+	names := []string{}
+	m.store.events.Range(func(k, _ interface{}) bool {
+		names = append(names, k.(string))
+		return true
+	})
+	m.ProjectList.Set(names)
+	if len(names) == 1 {
+		m.ProjectList.Select(0)
+	}
+}
+
+func (m *Monitor) updateMetricDescriptors() {
+	p := m.ProjectList.Selection.Value
+	if p == noSelection {
+		m.Console.Append("no project selection")
+		m.MetricDescriptorList.Set([]string{})
+		return
+	}
+	v, ok := m.store.events.Load(p)
+	if !ok {
+		return
+	}
+	pe := v.(*ProjectEvents)
+	names := []string{}
+	pe.metricDescriptors.Range(func(k, _ interface{}) bool {
+		names = append(names, k.(string))
+		return true
+	})
+	m.MetricDescriptorList.Set(names)
 }

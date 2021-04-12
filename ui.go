@@ -8,6 +8,8 @@ import (
 	"github.com/rivo/tview"
 )
 
+const noSelection = "---"
+
 func start(mon *Monitor) {
 	textBg := tcell.NewRGBColor(25, 28, 32)
 	dropBg := tcell.NewRGBColor(20, 23, 27)
@@ -17,13 +19,11 @@ func start(mon *Monitor) {
 	app := tview.NewApplication()
 	foc := tvp.NewFocusGroup(app)
 
-	projects := tvp.NewDropDownView(foc, mon.ProjectList)
-	projects.SetTextOptions("", "", "", "▼", "---")
-	projects.SetLabel(" projects ")
+	projects := tvp.NewListView(foc, mon.ProjectList)
+	//projects.S SetLabel(" projects ")
 
-	metricDescriptors := tvp.NewDropDownView(foc, mon.MetricDescriptorList)
-	metricDescriptors.SetTextOptions("", "", "", "▼", "---")
-	metricDescriptors.SetLabel(" metric descriptors ")
+	metricDescriptors := tvp.NewListView(foc, mon.MetricDescriptorList)
+	//metricDescriptors.SetLabel("  metrics ")
 
 	console := tvp.NewReadOnlyTextView(app, mon.Console)
 	console.SetTextColor(tcell.ColorLightGray)
@@ -31,9 +31,14 @@ func start(mon *Monitor) {
 
 	flex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(NewStaticView(" [yellow]gcpmon - Google Cloud Monitoring Inspector"), 0, 1, false).
-		AddItem(projects, 1, 1, true).
-		AddItem(metricDescriptors, 1, 1, false).
-
+		// proj
+		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
+		AddItem(NewStaticView(" [green]projects"), 0, 1, false).
+		AddItem(projects, 3, 1, true).
+		// desc
+		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
+		AddItem(NewStaticView(" [green] metrics"), 0, 1, false).
+		AddItem(metricDescriptors, 9, 1, false).
 		// console
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [yellow]console"), 1, 1, false).

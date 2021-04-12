@@ -1,6 +1,6 @@
 # gcpmon
 
-A Google Cloud Platform Monitoring emulator for (Stackdriver) metrics and tracing.
+A Google Cloud Platform Monitoring inspector for (Stackdriver) metrics and tracing.
 
 
 ## Go

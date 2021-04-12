@@ -56,6 +56,12 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/emicklei/tviewplus v0.5.0 h1:t/79fFtidYeumjPXpaa4jgyPrvJZXdXpjE/iXa6wNkQ=
 github.com/emicklei/tviewplus v0.5.0/go.mod h1:sZdiKwyM/IekQ3zOfitB8ZuDyJf/IGT2Ok9hmIpFQmc=
+github.com/emicklei/tviewplus v0.7.0 h1:kcef+hQa1VrqNfvLptLGWuAbg2lXZnE7sPDqvtk5Zn4=
+github.com/emicklei/tviewplus v0.7.0/go.mod h1:VHghclKc3j6m3X3gRJiXVzhTOtbEROcKpi+v29IoERc=
+github.com/emicklei/tviewplus v0.7.1 h1:NBgKEZ5kvl8Fi+5fNAL/pD50H9tw+6Pcl2aI4KlP8cM=
+github.com/emicklei/tviewplus v0.7.1/go.mod h1:VHghclKc3j6m3X3gRJiXVzhTOtbEROcKpi+v29IoERc=
+github.com/emicklei/tviewplus v0.7.2 h1:867iTVF+BBqmQQVCdW3KelMsDP/1/Vz0Cgbm1CbDUzw=
+github.com/emicklei/tviewplus v0.7.2/go.mod h1:VHghclKc3j6m3X3gRJiXVzhTOtbEROcKpi+v29IoERc=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1mIlRU8Am5FuJP05cCM98=
