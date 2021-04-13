@@ -46,21 +46,19 @@ func (s *EventStore) addTimeSeries(p string, t []*monitoring.TimeSeries) {
 	}
 }
 
-func (s *EventStore) getTimeSeries(project string, metricType string) (list []*monitoring.TimeSeries) {
+func (s *EventStore) getTimeSeries(project string, metricType string) (desc *metric.MetricDescriptor, list []*monitoring.TimeSeries) {
 	v, ok := s.events.Load(project)
 	if !ok {
-		return list
+		return nil, list
 	}
 	pe := v.(*ProjectEvents)
 	w, ok := pe.timeSeries.Load(metricType)
 	if !ok {
-		// keys := []string{}
-		// pe.timeSeries.Range(func(k, v interface{}) bool {
-		// 	keys = append(keys, k.(string))
-		// 	return true
-		// })
-		// log.Println("metric", metricType, keys)
-		return list
+		return nil, list
 	}
-	return w.([]*monitoring.TimeSeries)
+	d, ok := pe.metricDescriptors.Load(metricType)
+	if !ok {
+		return nil, list
+	}
+	return d.(*metric.MetricDescriptor), w.([]*monitoring.TimeSeries)
 }

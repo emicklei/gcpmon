@@ -25,6 +25,7 @@ func start(mon *Monitor) {
 
 	metricDescriptors := tvp.NewListView(foc, mon.MetricDescriptorList)
 	metricDescriptors.SetBorder(true)
+	metricDescriptors.SetHighlightFullLine(true)
 	//metricDescriptors.SetLabel(" metrics")
 
 	console := tvp.NewReadOnlyTextView(app, mon.Console)
@@ -40,14 +41,16 @@ func start(mon *Monitor) {
 		AddItem(projects, 3, 1, true).
 		// desc
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
-		AddItem(NewStaticView(" [green] metrics"), 1, 1, false).
-		AddItem(metricDescriptors, 9, 1, false).
-		// console
+		AddItem(NewStaticView(" [green]metrics"), 1, 1, false).
+		AddItem(metricDescriptors, 9, 1, false)
+
+	mon.metricStats.addUITo(app, flex)
+
+	// console
+	flex.
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [yellow]console"), 1, 1, false).
 		AddItem(console, 0, 4, false)
-
-	mon.metricStats.addUITo(app, flex)
 
 	if err := app.SetRoot(flex, true).EnableMouse(true).Run(); err != nil {
 		log.Println(err)

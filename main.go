@@ -10,6 +10,8 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
+var logger *Monitor
+
 func main() {
 	lis, err := net.Listen("tcp", ":9443")
 	if err != nil {
@@ -22,15 +24,20 @@ func main() {
 
 	mon := NewMonitor(newEventStore())
 	mon.setup()
+	// cannot log to stdout, use console instead
+	logger = mon
 
 	ms := &MetricsService{monitor: mon}
 	ts := &TraceService{monitor: mon}
 	grpcServer := grpc.NewServer(grpc.Creds(cred))
-	log.Println("register metrics service")
+
+	logger.Println("register metrics service")
 	monitoringpb.RegisterMetricServiceServer(grpcServer, ms)
-	log.Println("register tracing service")
+
+	logger.Println("register tracing service")
 	cloudtrace.RegisterTraceServiceServer(grpcServer, ts)
-	log.Println("serving gRPC on :9443")
+
+	logger.Println("serving gRPC on :9443")
 	go grpcServer.Serve(lis)
 
 	start(mon)

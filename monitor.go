@@ -27,7 +27,9 @@ func NewMonitor(s *EventStore) *Monitor {
 
 func (m *Monitor) Printf(format string, v ...interface{}) {
 	m.Console.Append(fmt.Sprintf(format, v...))
-	// log.Printf(format, v...)
+}
+func (m *Monitor) Println(v ...interface{}) {
+	m.Console.Append(fmt.Sprintln(v...))
 }
 
 func (m *Monitor) updateProjects() {
