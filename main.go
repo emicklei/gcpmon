@@ -20,8 +20,7 @@ func main() {
 		log.Fatal("failed to load TLS", err)
 	}
 
-	store := new(EventStore)
-	mon := NewMonitor(store)
+	mon := NewMonitor(newEventStore())
 	mon.setup()
 
 	ms := &MetricsService{monitor: mon}

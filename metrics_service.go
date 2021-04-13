@@ -89,15 +89,10 @@ func (s *MetricsService) ListTimeSeries(ctx context.Context, req *ListTimeSeries
 // If any time series could not be written, a corresponding failure message is
 // included in the error response.
 func (s *MetricsService) CreateTimeSeries(ctx context.Context, req *CreateTimeSeriesRequest) (*emptypb.Empty, error) {
-	// s.monitor.Printf("CreateTimeSeries:%s len:%d", req.Name, len(req.TimeSeries))
-	// for _, each := range req.TimeSeries {
-	// 	s.monitor.Printf("\ttype:%s\n", each.Metric.Type)
-	// 	s.monitor.Printf("\tresource:%v labels:%v unit:%v points:%d\n", each.Resource.Type, each.Metric.Labels, each.Unit, len(each.Points))
-	// 	for _, other := range each.Points {
-	// 		s.monitor.Printf("\t\tinterval:%s value:%s\n", intervalDisplay(other.Interval), pointDisplay(other.GetValue()))
-	// 	}
-	// }
 	s.monitor.store.addTimeSeries(req.Name, req.TimeSeries)
+	go func() {
+		s.monitor.updateMetricStats()
+	}()
 	return new(emptypb.Empty), nil
 }
 

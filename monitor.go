@@ -8,6 +8,7 @@ import (
 
 type Monitor struct {
 	store                *EventStore
+	metricStats          *MetricStats
 	ProjectList          *tvp.StringListSelectionHolder
 	MetricDescriptorList *tvp.StringListSelectionHolder
 	BatchWriteSpansList  *tvp.StringListSelectionHolder
@@ -17,6 +18,7 @@ type Monitor struct {
 func NewMonitor(s *EventStore) *Monitor {
 	return &Monitor{
 		store:                s,
+		metricStats:          NewMetricStats(),
 		ProjectList:          new(tvp.StringListSelectionHolder),
 		MetricDescriptorList: new(tvp.StringListSelectionHolder),
 		Console:              new(tvp.StringHolder),
@@ -43,7 +45,6 @@ func (m *Monitor) updateProjects() {
 func (m *Monitor) updateMetricDescriptors() {
 	p := m.ProjectList.Selection.Value
 	if p == noSelection {
-		m.Console.Append("no project selection")
 		m.MetricDescriptorList.Set([]string{})
 		return
 	}
@@ -58,4 +59,8 @@ func (m *Monitor) updateMetricDescriptors() {
 		return true
 	})
 	m.MetricDescriptorList.Set(names)
+}
+
+func (m *Monitor) updateMetricStats() {
+	m.metricStats.update(m)
 }
