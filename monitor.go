@@ -12,6 +12,7 @@ type Monitor struct {
 	ProjectList          *tvp.StringListSelectionHolder
 	MetricDescriptorList *tvp.StringListSelectionHolder
 	BatchWriteSpansList  *tvp.StringListSelectionHolder
+	Labels               *tvp.StringHolder
 	Console              *tvp.StringHolder
 }
 
@@ -22,6 +23,7 @@ func NewMonitor(s *EventStore) *Monitor {
 		ProjectList:          new(tvp.StringListSelectionHolder),
 		MetricDescriptorList: new(tvp.StringListSelectionHolder),
 		Console:              new(tvp.StringHolder),
+		Labels:               new(tvp.StringHolder),
 	}
 }
 

@@ -62,3 +62,16 @@ func (s *EventStore) getTimeSeries(project string, metricType string) (desc *met
 	}
 	return d.(*metric.MetricDescriptor), w.([]*monitoring.TimeSeries)
 }
+
+func (s *EventStore) getMetricDescriptor(project string, metricType string) *metric.MetricDescriptor {
+	v, ok := s.events.Load(project)
+	if !ok {
+		return nil
+	}
+	pe := v.(*ProjectEvents)
+	d, ok := pe.metricDescriptors.Load(metricType)
+	if !ok {
+		return nil
+	}
+	return d.(*metric.MetricDescriptor)
+}

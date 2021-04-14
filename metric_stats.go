@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 
@@ -18,6 +19,7 @@ type MetricStats struct {
 	MinValue        *tvp.StringHolder
 	MaxValue        *tvp.StringHolder
 	Count           *tvp.StringHolder
+	LatestLabels    *tvp.StringHolder
 }
 
 func NewMetricStats() *MetricStats {
@@ -28,6 +30,7 @@ func NewMetricStats() *MetricStats {
 		MinValue:        new(tvp.StringHolder),
 		MaxValue:        new(tvp.StringHolder),
 		Count:           new(tvp.StringHolder),
+		LatestLabels:    new(tvp.StringHolder),
 	}
 }
 
@@ -39,7 +42,7 @@ func (s *MetricStats) update(mon *Monitor) {
 		s.MaxValue.Set("")
 		return
 	}
-	count := 0
+	//count := 0
 	var min float64 = math.MaxFloat64
 	var max float64 = -min
 	s.MetricKind.Set(metric.MetricDescriptor_MetricKind_name[int32(desc.MetricKind)])
@@ -60,7 +63,28 @@ func (s *MetricStats) update(mon *Monitor) {
 			}
 		}
 	}
-	s.Count.Set(strconv.Itoa(count))
+	buf := new(bytes.Buffer)
+	latest := ts[len(ts)-1]
+	if len(latest.GetResource().Labels) > 0 {
+		fmt.Fprintf(buf, "resource.labels values:\n")
+		for k, v := range latest.GetResource().Labels {
+			fmt.Fprintf(buf, "\t%s:%v\n", k, v)
+		}
+	}
+	if latest.Metadata != nil {
+		fmt.Fprintf(buf, "metadata.userlabels values:\n")
+		for k, v := range latest.Metadata.UserLabels {
+			fmt.Fprintf(buf, "\t%s:%v\n", k, v)
+		}
+	}
+	if latest.Metric != nil {
+		fmt.Fprintf(buf, "metric labels values:\n")
+		for k, v := range latest.Metric.Labels {
+			fmt.Fprintf(buf, "\t%s:%v\n", k, v)
+		}
+	}
+	s.LatestLabels.Set(buf.String())
+	s.Count.Set(strconv.Itoa(len(ts)))
 	s.MinValue.Set(fmt.Sprintf("%.4f", min))
 	s.MaxValue.Set(fmt.Sprintf("%.4f", max))
 }
@@ -102,5 +126,8 @@ func (s *MetricStats) addUITo(a *tview.Application, c *tview.Flex) {
 			AddItem(tvp.NewReadOnlyTextView(a, s.MaxValue), 12, 1, false)
 		c.AddItem(row, 1, 1, false)
 	}
-
+	{
+		c.AddItem(NewStaticView(" Labels"), 1, 1, false)
+		c.AddItem(tvp.NewReadOnlyTextView(a, s.LatestLabels), 4, 1, false)
+	}
 }

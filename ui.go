@@ -4,7 +4,6 @@ import (
 	"log"
 
 	tvp "github.com/emicklei/tviewplus"
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -21,17 +20,25 @@ func start(mon *Monitor) {
 
 	projects := tvp.NewListView(foc, mon.ProjectList)
 	projects.SetBorder(true)
-	//projects.S SetLabel(" projects")
+	// change item makes new selection
+	projects.SetChangedFunc(func(index int, mainText, secondText string, shortcut rune) {
+		mon.ProjectList.Select(index)
+	})
 
 	metricDescriptors := tvp.NewListView(foc, mon.MetricDescriptorList)
 	metricDescriptors.SetBorder(true)
 	metricDescriptors.SetHighlightFullLine(true)
-	//metricDescriptors.SetLabel(" metrics")
+	// change item makes new selection
+	metricDescriptors.SetChangedFunc(func(index int, mainText, secondText string, shortcut rune) {
+		mon.MetricDescriptorList.Select(index)
+	})
+
+	labels := tvp.NewReadOnlyTextView(app, mon.Labels)
+	labels.SetBorder(true)
 
 	console := tvp.NewReadOnlyTextView(app, mon.Console)
-	console.SetTextColor(tcell.ColorLightGray)
+	//console.SetTextColor(tcell.ColorLightGray)
 	console.SetBorder(true)
-	//console.SetBackgroundColor(textBg)
 
 	flex := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(NewStaticView(" [yellow]gcpmon - Google Cloud Monitoring Inspector"), 1, 1, false).
@@ -43,6 +50,12 @@ func start(mon *Monitor) {
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [green]metrics"), 1, 1, false).
 		AddItem(metricDescriptors, 9, 1, false)
+
+	// labels
+	flex.
+		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
+		AddItem(NewStaticView(" [green]metric label definitions"), 1, 1, false).
+		AddItem(labels, 0, 4, false)
 
 	mon.metricStats.addUITo(app, flex)
 
