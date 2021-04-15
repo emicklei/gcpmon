@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"strconv"
+	"time"
 
 	"math"
 
@@ -35,7 +36,7 @@ func NewMetricStats() *MetricStats {
 }
 
 func (s *MetricStats) update(mon *Monitor) {
-	desc, ts := mon.store.getTimeSeries(mon.ProjectList.Selection.Value, mon.MetricDescriptorList.Selection.Value)
+	desc, ts, when := mon.store.getTimeSeries(mon.ProjectList.Selection.Value, mon.MetricDescriptorList.Selection.Value)
 	if len(ts) == 0 {
 		s.Count.Set("")
 		s.MinValue.Set("")
@@ -76,6 +77,12 @@ func (s *MetricStats) update(mon *Monitor) {
 		for k, v := range latest.Metadata.UserLabels {
 			fmt.Fprintf(buf, "\t%s:%v\n", k, v)
 		}
+		if latest.Metadata.SystemLabels != nil {
+			fmt.Fprintf(buf, "metadata.systemlabels values:\n")
+			for k, v := range latest.Metadata.SystemLabels.Fields {
+				fmt.Fprintf(buf, "\t%s:%v\n", k, v)
+			}
+		}
 	}
 	if latest.Metric != nil {
 		fmt.Fprintf(buf, "metric labels values:\n")
@@ -85,6 +92,9 @@ func (s *MetricStats) update(mon *Monitor) {
 	}
 	s.LatestLabels.Set(buf.String())
 	s.Count.Set(strconv.Itoa(len(ts)))
+	dur := time.Now().Sub(when).Seconds()
+	freq := float64(len(ts)) / float64(dur)
+	s.Frequency.Set(fmt.Sprintf("%.2f", freq))
 	s.MinValue.Set(fmt.Sprintf("%.4f", min))
 	s.MaxValue.Set(fmt.Sprintf("%.4f", max))
 }
@@ -128,6 +138,8 @@ func (s *MetricStats) addUITo(a *tview.Application, c *tview.Flex) {
 	}
 	{
 		c.AddItem(NewStaticView(" Labels"), 1, 1, false)
-		c.AddItem(tvp.NewReadOnlyTextView(a, s.LatestLabels), 4, 1, false)
+		rov := tvp.NewReadOnlyTextView(a, s.LatestLabels)
+		rov.SetBorder(true)
+		c.AddItem(rov, 6, 1, false)
 	}
 }

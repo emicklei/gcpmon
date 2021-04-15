@@ -55,8 +55,9 @@ func start(mon *Monitor) {
 	flex.
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [green]metric label definitions"), 1, 1, false).
-		AddItem(labels, 0, 4, false)
+		AddItem(labels, 0, 2, false)
 
+	flex.AddItem(NewStaticView(" [green]metric stats"), 1, 1, false)
 	mon.metricStats.addUITo(app, flex)
 
 	// console
