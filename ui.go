@@ -45,7 +45,7 @@ func start(mon *Monitor) {
 		// proj
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [green]projects"), 1, 1, false).
-		AddItem(projects, 3, 1, true).
+		AddItem(projects, 4, 1, true).
 		// desc
 		AddItem(tview.NewBox().SetBorderPadding(1, 0, 0, 0), 1, 1, false).
 		AddItem(NewStaticView(" [green]metrics"), 1, 1, false).

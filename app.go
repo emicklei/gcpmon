@@ -10,6 +10,11 @@ import (
 
 func (m *Monitor) setup() {
 	m.MetricDescriptorList.AddSelectionChangeDependent(m.changedMetricDescriptor)
+	m.ProjectList.AddSelectionChangeDependent(m.changedProject)
+}
+
+func (m *Monitor) changedProject(old, next tvp.SelectionWithIndex) {
+	m.updateMetricDescriptors()
 }
 
 func (m *Monitor) changedMetricDescriptor(old, next tvp.SelectionWithIndex) {
