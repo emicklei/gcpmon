@@ -60,7 +60,17 @@ func (s *MetricStats) update(mon *Monitor) {
 					max = mean
 				}
 			} else {
-				logger.Println("point type", each.ValueType)
+				if desc.GetValueType() == metric.MetricDescriptor_INT64 {
+					f := float64(other.Value.GetInt64Value())
+					if f < min {
+						min = f
+					}
+					if f > max {
+						max = f
+					}
+				} else {
+					logger.Println("unhandled point type", each.ValueType)
+				}
 			}
 		}
 	}
@@ -137,7 +147,6 @@ func (s *MetricStats) addUITo(a *tview.Application, c *tview.Flex) {
 		c.AddItem(row, 1, 1, false)
 	}
 	{
-		c.AddItem(NewStaticView(" Labels"), 1, 1, false)
 		rov := tvp.NewReadOnlyTextView(a, s.LatestLabels)
 		rov.SetBorder(true)
 		c.AddItem(rov, 6, 1, false)
