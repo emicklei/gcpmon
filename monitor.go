@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	tvp "github.com/emicklei/tviewplus"
 )
@@ -43,6 +44,7 @@ func (m *Monitor) updateProjects() {
 		names = append(names, k.(string))
 		return true
 	})
+	sort.Strings(names)
 	m.ProjectList.Set(names)
 	if len(names) == 1 {
 		m.ProjectList.Select(0)
@@ -65,6 +67,7 @@ func (m *Monitor) updateMetricDescriptors() {
 		names = append(names, k.(string))
 		return true
 	})
+	sort.Strings(names)
 	m.MetricDescriptorList.Set(names)
 }
 
@@ -88,5 +91,6 @@ func (m *Monitor) updateTracespans() {
 		names = append(names, k.(string))
 		return true
 	})
+	sort.Strings(names)
 	m.BatchWriteSpansList.Set(names)
 }

@@ -20,7 +20,7 @@ type ProjectEvents struct {
 	monitoredResourceDescriptors *sync.Map
 	timeSeriesStartedAt          time.Time
 	timeSeries                   *sync.Map // type -> []TimeSeries
-	traceSpans                   *sync.Map
+	traceSpans                   *sync.Map // displayName -> []Span
 }
 
 func newProjectEvents() *ProjectEvents {
@@ -105,6 +105,6 @@ func (s *EventStore) addTraceSpans(project string, spans []*cloudtrace.Span) {
 		w, _ := pe.traceSpans.LoadOrStore(key, []*cloudtrace.Span{})
 		list := w.([]*cloudtrace.Span)
 		list = append(list, each)
-		pe.traceSpans.Store(key, w)
+		pe.traceSpans.Store(key, list)
 	}
 }
