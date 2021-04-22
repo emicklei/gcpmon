@@ -9,6 +9,7 @@ import (
 type Monitor struct {
 	store                *EventStore
 	metricStats          *MetricStats
+	traceStats           *TraceStats
 	ProjectList          *tvp.StringListSelectionHolder
 	MetricDescriptorList *tvp.StringListSelectionHolder
 	BatchWriteSpansList  *tvp.StringListSelectionHolder
@@ -20,8 +21,10 @@ func NewMonitor(s *EventStore) *Monitor {
 	return &Monitor{
 		store:                s,
 		metricStats:          NewMetricStats(),
+		traceStats:           NewTraceStats(),
 		ProjectList:          new(tvp.StringListSelectionHolder),
 		MetricDescriptorList: new(tvp.StringListSelectionHolder),
+		BatchWriteSpansList:  new(tvp.StringListSelectionHolder),
 		Console:              new(tvp.StringHolder),
 		Labels:               new(tvp.StringHolder),
 	}
@@ -67,4 +70,23 @@ func (m *Monitor) updateMetricDescriptors() {
 
 func (m *Monitor) updateMetricStats() {
 	m.metricStats.update(m)
+}
+
+func (m *Monitor) updateTracespans() {
+	p := m.ProjectList.Selection.Value
+	if p == noSelection {
+		m.BatchWriteSpansList.Set([]string{})
+		return
+	}
+	v, ok := m.store.events.Load(p)
+	if !ok {
+		return
+	}
+	pe := v.(*ProjectEvents)
+	names := []string{}
+	pe.traceSpans.Range(func(k, _ interface{}) bool {
+		names = append(names, k.(string))
+		return true
+	})
+	m.BatchWriteSpansList.Set(names)
 }

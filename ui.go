@@ -36,6 +36,10 @@ func start(mon *Monitor) {
 	labels := tvp.NewReadOnlyTextView(app, mon.Labels)
 	labels.SetBorder(true)
 
+	spans := tvp.NewListView(foc, mon.BatchWriteSpansList)
+	spans.SetBorder(true)
+	spans.SetHighlightFullLine(true)
+
 	console := tvp.NewReadOnlyTextView(app, mon.Console)
 	//console.SetTextColor(tcell.ColorLightGray)
 	console.SetBorder(true)
@@ -57,8 +61,14 @@ func start(mon *Monitor) {
 		AddItem(NewStaticView(" [green]metric label definitions"), 1, 1, false).
 		AddItem(labels, 6, 1, false)
 
+	flex.AddItem(NewStaticView(" [green]traces"), 1, 1, false)
+	flex.AddItem(spans, 4, 1, false)
+
 	flex.AddItem(NewStaticView(" [green]metric stats"), 1, 1, false)
 	mon.metricStats.addUITo(app, flex)
+
+	flex.AddItem(NewStaticView(" [green]trace stats"), 1, 1, false)
+	mon.traceStats.addUITo(app, flex)
 
 	// console
 	flex.

@@ -14,15 +14,17 @@ type TraceService struct {
 // Sends new spans to new or existing traces. You cannot update
 // existing spans.
 func (s *TraceService) BatchWriteSpans(ctx context.Context, req *BatchWriteSpansRequest) (*emptypb.Empty, error) {
-	// s.monitor.Printf("BatchWriteSpans:%s", req.Name)
-	// for _, each := range req.Spans {
-	// 	s.monitor.Printf("\tspan %v with delta:%d", each.DisplayName, each.EndTime.Nanos-each.StartTime.GetNanos())
-	// }
+	//s.monitor.Printf(".")
+	s.monitor.store.addTraceSpans(req.Name, req.Spans)
+	go func() {
+		s.monitor.updateProjects()
+		s.monitor.updateTracespans()
+	}()
 	return new(emptypb.Empty), nil
 }
 
 // Creates a new span.
 func (s *TraceService) CreateSpan(ctx context.Context, req *Span) (*Span, error) {
-	//s.monitor.Printf("CreateSpan:%s", req.Name)
+	s.monitor.Printf("CreateSpan:%s", req.Name)
 	return req, nil
 }

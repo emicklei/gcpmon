@@ -38,9 +38,13 @@ func NewMetricStats() *MetricStats {
 func (s *MetricStats) update(mon *Monitor) {
 	desc, ts, when := mon.store.getTimeSeries(mon.ProjectList.Selection.Value, mon.MetricDescriptorList.Selection.Value)
 	if len(ts) == 0 {
+		s.MetricKind.Set("")
+		s.MetricValueType.Set("")
+		s.Frequency.Set("")
 		s.Count.Set("")
 		s.MinValue.Set("")
 		s.MaxValue.Set("")
+		s.LatestLabels.Set("")
 		return
 	}
 	//count := 0

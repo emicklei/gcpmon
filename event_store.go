@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"google.golang.org/genproto/googleapis/api/metric"
+	"google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
 	"google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
@@ -52,6 +53,19 @@ func (s *EventStore) addTimeSeries(p string, t []*monitoring.TimeSeries) {
 	}
 }
 
+func (s *EventStore) getTracespans(project string, displayName string) (list []*cloudtrace.Span) {
+	v, ok := s.events.Load(project)
+	if !ok {
+		return list
+	}
+	pe := v.(*ProjectEvents)
+	w, ok := pe.traceSpans.Load(displayName)
+	if !ok {
+		return list
+	}
+	return w.([]*cloudtrace.Span)
+}
+
 func (s *EventStore) getTimeSeries(project string, metricType string) (desc *metric.MetricDescriptor, list []*monitoring.TimeSeries, t time.Time) {
 	v, ok := s.events.Load(project)
 	if !ok {
@@ -80,4 +94,17 @@ func (s *EventStore) getMetricDescriptor(project string, metricType string) *met
 		return nil
 	}
 	return d.(*metric.MetricDescriptor)
+}
+
+func (s *EventStore) addTraceSpans(project string, spans []*cloudtrace.Span) {
+	v, _ := s.events.LoadOrStore(project, newProjectEvents())
+	pe := v.(*ProjectEvents)
+	// use pe lock instead of syncmap?
+	for _, each := range spans {
+		key := each.GetDisplayName().GetValue()
+		w, _ := pe.traceSpans.LoadOrStore(key, []*cloudtrace.Span{})
+		list := w.([]*cloudtrace.Span)
+		list = append(list, each)
+		pe.traceSpans.Store(key, w)
+	}
 }
